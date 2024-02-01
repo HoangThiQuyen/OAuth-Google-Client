@@ -1,3 +1,4 @@
+import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { Link } from "react-router-dom";
@@ -15,6 +16,8 @@ const getGoogleAuthUrl = () => {
       "https://www.googleapis.com/auth/userinfo.email",
     ].join(" "),
     prompt: "consent",
+    // To get refresh-token
+    access_type: "offline",
   };
   const queryString = new URLSearchParams(query).toString();
   return `${url}?${queryString}`;
@@ -23,6 +26,14 @@ const getGoogleAuthUrl = () => {
 const googleOAuthURL = getGoogleAuthUrl();
 
 const Home = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    Boolean(localStorage.getItem("access_token"))
+  );
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    setIsAuthenticated(false);
+  };
   return (
     <>
       <div>
@@ -34,7 +45,14 @@ const Home = () => {
         </span>
       </div>
       <h1>Google OAuth 2.0</h1>
-      <Link to={googleOAuthURL}>Login with google</Link>
+      {isAuthenticated ? (
+        <>
+          <p> You are logged in</p>
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <Link to={googleOAuthURL}>Login with google</Link>
+      )}
     </>
   );
 };
