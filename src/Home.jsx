@@ -44,6 +44,12 @@ const Home = () => {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </span>
       </div>
+      <video controls width={500}>
+        <source
+          src="http://localhost:4000/static/video-stream/c8e27254372e94662de94b300.mp4"
+          type="video/mp4"
+        />
+      </video>
       <h1>Google OAuth 2.0</h1>
       {isAuthenticated ? (
         <>
