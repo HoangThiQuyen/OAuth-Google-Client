@@ -34,6 +34,7 @@ const Home = () => {
     localStorage.removeItem("refresh_token");
     setIsAuthenticated(false);
   };
+
   return (
     <>
       <div>
@@ -46,14 +47,14 @@ const Home = () => {
       </div>
       <video controls width={500}>
         <source
-          src="http://localhost:4000/static/video-stream/c8e27254372e94662de94b300.mp4"
+          src="https://twitter-clone-ap-southeast-1-singapore.s3.ap-southeast-1.amazonaws.com/videos/682761d1a1db2461f502e2800.mp4"
           type="video/mp4"
         />
       </video>
       <h1>Google OAuth 2.0</h1>
       {isAuthenticated ? (
         <>
-          <p> You are logged in</p>
+          <p>You are logged in </p>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
