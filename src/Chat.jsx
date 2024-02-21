@@ -1,42 +1,87 @@
 import { useContext, useEffect, useState } from "react";
 import socket from "./socket";
+import axios from "axios";
 import ProfileContext from "./ProfileContext";
 
-const Chat = () => {
-  const profile = useContext(ProfileContext);
+export default function Chat() {
+  const { profile, usernames } = useContext(ProfileContext);
   const [value, setValue] = useState("");
   const [messages, setMessages] = useState([]);
-  console.log(profile);
+  const [receiver, setReceiver] = useState("");
+  const getProfile = (username) => {
+    axios
+      .get(`/users/${username}`, {
+        baseURL: import.meta.env.VITE_API_URL,
+      })
+      .then((res) => {
+        setReceiver(res.data.result._id);
+        alert(`Now you can chat with ${res.data.result.name}`);
+      });
+  };
   useEffect(() => {
     socket.auth = {
       _id: profile._id,
     };
     socket.connect();
-    socket.on("receive private message", (arg) => {
-      setMessages((message) => [...message, arg.content]);
+    socket.on("receive private message", (data) => {
+      const content = data.content;
+      setMessages((messages) => [
+        ...messages,
+        {
+          content,
+          isSender: false,
+        },
+      ]);
     });
     return () => {
       socket.disconnect();
     };
-  }, [profile]);
+  }, []);
 
-  const handleSubmit = (e) => {
+  const send = (e) => {
     e.preventDefault();
+    setValue("");
     socket.emit("private message", {
       content: value,
-      to: "65b4e0f4513e0e1c8b34da1a", //user_id
+      to: receiver,
     });
-    setValue("");
+    setMessages((messages) => [
+      ...messages,
+      {
+        content: value,
+        isSender: true,
+      },
+    ]);
   };
+
   return (
     <div>
       <h1>Chat</h1>
       <div>
-        {messages.map((item, index) => (
-          <div key={index}>{item}</div>
+        {usernames.map((username) => (
+          <div key={username.name}>
+            <button onClick={() => getProfile(username.value)}>
+              {username.name}
+            </button>
+          </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit}>
+      <div className="chat">
+        {messages.map((message, index) => (
+          <div key={index}>
+            <div className="message-container">
+              <div
+                className={
+                  "message " + (message.isSender ? "message-right" : "")
+                }
+              >
+                {message.content}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={send}>
         <input
           type="text"
           onChange={(e) => setValue(e.target.value)}
@@ -46,6 +91,4 @@ const Chat = () => {
       </form>
     </div>
   );
-};
-
-export default Chat;
+}
