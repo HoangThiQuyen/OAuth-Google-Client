@@ -15,13 +15,14 @@ function App() {
       value: "quyenhoangthi",
     },
   ];
+  const access_token = localStorage.getItem("access_token");
 
   const LIMIT = 10;
   const PAGE = 1;
   return (
     <>
       <ProfileContext.Provider
-        value={{ profile, usernames, page: PAGE, limit: LIMIT }}
+        value={{ profile, usernames, page: PAGE, limit: LIMIT, access_token }}
       >
         <RouterProvider router={router} />
       </ProfileContext.Provider>

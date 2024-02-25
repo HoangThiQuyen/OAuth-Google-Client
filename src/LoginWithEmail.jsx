@@ -73,7 +73,7 @@ const LoginWithEmail = () => {
           <div>
             Hello{" "}
             <strong>
-              {JSON.parse(localStorage.getItem("user_info")).email}
+              {JSON.parse(localStorage.getItem("user_info"))?.email}
             </strong>
             ! You are login already
           </div>

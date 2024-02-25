@@ -5,7 +5,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ProfileContext from "./ProfileContext";
 
 export default function Chat() {
-  const { profile, usernames, page, limit } = useContext(ProfileContext);
+  const { profile, usernames, page, limit, access_token } =
+    useContext(ProfileContext);
   const [value, setValue] = useState("");
   const [conversations, setConversations] = useState([]);
   const [receiver, setReceiver] = useState("");
@@ -24,10 +25,7 @@ export default function Chat() {
       });
   };
   useEffect(() => {
-    socket.auth = {
-      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    };
-    socket.connect();
+    // không cần sử dụng socket.connect vì khi khởi tạo io thì socket đã tự tạo 1 connect tới server
     socket.on("receive_message", (data) => {
       const { payload } = data;
       setConversations((conversations) => [payload, ...conversations]);
@@ -46,7 +44,7 @@ export default function Chat() {
         .get(`/conversations/receivers/${receiver}`, {
           baseURL: import.meta.env.VITE_API_URL,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${access_token}`,
           },
           params: {
             limit,
@@ -62,7 +60,7 @@ export default function Chat() {
           });
         });
     }
-  }, [limit, page, receiver]);
+  }, [access_token, limit, page, receiver]);
 
   const fetchMoreConversations = () => {
     if (receiver && pagination.page < pagination.total_page) {
@@ -70,7 +68,7 @@ export default function Chat() {
         .get(`/conversations/receivers/${receiver}`, {
           baseURL: import.meta.env.VITE_API_URL,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${access_token}`,
           },
           params: {
             limit,
