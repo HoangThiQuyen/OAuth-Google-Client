@@ -31,7 +31,10 @@ export default function Chat() {
       setConversations((conversations) => [payload, ...conversations]);
     });
     socket.on("connect_error", (err) => {
-      console.log(err.data);
+      console.log("connect_error", err.data);
+    });
+    socket.on("disconnect", (reason) => {
+      console.log("disconnect", reason);
     });
     return () => {
       socket.disconnect();
